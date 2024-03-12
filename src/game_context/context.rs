@@ -1,3 +1,4 @@
+use rand::prelude::*;
 use std::ops::Add;
 
 pub const GRID_X_SIZE: u32 = 40;
@@ -84,8 +85,11 @@ impl GameContext {
             self.player_position.push(self.food);
             self.player_position.reverse();
 
-            self.food.0 = (self.food.0 + 5) % (GRID_X_SIZE * DOT_SIZE_IN_PXS) as i32;
-            self.food.1 = (self.food.1 + 5) % (GRID_Y_SIZE * DOT_SIZE_IN_PXS) as i32;
+            let mut rng = rand::thread_rng();
+            let rand_pos: i32 = rng.gen_range(0..30);
+
+            self.food.0 = (self.food.0 + rand_pos) % (GRID_X_SIZE) as i32;
+            self.food.1 = (self.food.1 + rand_pos) % (GRID_Y_SIZE) as i32;
         }
     }
 }
