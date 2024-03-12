@@ -8,6 +8,7 @@ pub const DOT_SIZE_IN_PXS: u32 = 20;
 pub enum GameState {
     Playing,
     Paused,
+    GameOver,
 }
 
 pub enum PlayerDirection {
@@ -33,15 +34,18 @@ impl GameContext {
             player_position: vec![Point(3, 1), Point(2, 1), Point(1, 1)],
             player_direction: PlayerDirection::Right,
             food: Point(3, 3),
-            state: GameState::Paused,
+            state: GameState::Playing,
         }
     }
 
     pub fn next_tick(&mut self) {
-        if let GameState::Paused = self.state {
-            return;
+        match self.state {
+            GameState::Playing => self.update_game(),
+            _ => return,
         }
+    }
 
+    fn update_game(&mut self) {
         let head_position = self.player_position.first().unwrap();
         let next_head_position = match self.player_direction {
             PlayerDirection::Up => *head_position + Point(0, -1),
@@ -50,10 +54,22 @@ impl GameContext {
             PlayerDirection::Right => *head_position + Point(1, 0),
         };
 
+        self.check_position(&next_head_position);
+
         self.player_position.pop();
         self.player_position.reverse();
         self.player_position.push(next_head_position);
         self.player_position.reverse();
+    }
+
+    fn check_position(&mut self, position: &Point) {
+        if position.0 >= GRID_X_SIZE as i32
+            || position.0 < 0
+            || position.1 >= GRID_Y_SIZE as i32
+            || position.1 < 0
+        {
+            self.state = GameState::GameOver;
+        }
     }
 
     pub fn move_up(&mut self) {
@@ -76,6 +92,7 @@ impl GameContext {
         self.state = match self.state {
             GameState::Paused => GameState::Playing,
             GameState::Playing => GameState::Paused,
+            _ => GameState::GameOver,
         }
     }
 

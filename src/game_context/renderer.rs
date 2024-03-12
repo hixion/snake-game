@@ -36,7 +36,7 @@ impl Renderer {
     fn draw_background(&mut self, context: &GameContext) -> Result<(), String> {
         let color = match context.state {
             GameState::Playing => Color::RGB(0, 0, 0),
-            GameState::Paused => Color::RGB(30, 30, 30),
+            _ => Color::RGB(30, 30, 30),
         };
         self.canvas.set_draw_color(color);
         self.canvas.clear();
